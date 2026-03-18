@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Search, Pencil, Trash2, Eye, Image } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, Image, X } from "lucide-react";
 
 interface NewsPost {
   id: string;
@@ -43,28 +43,44 @@ const NewsPage = ({ channel }: NewsPageProps) => {
   const [news, setNews] = useState(MOCK_NEWS[channel]);
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ title: "", content: "", author: "" });
+  const [previewPost, setPreviewPost] = useState<NewsPost | null>(null);
 
   const filtered = news.filter((n) =>
     n.title.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleAdd = () => {
+  const openAdd = () => {
+    setEditingId(null);
+    setForm({ title: "", content: "", author: "" });
+    setShowForm(true);
+  };
+
+  const openEdit = (post: NewsPost) => {
+    setEditingId(post.id);
+    setForm({ title: post.title, content: post.content, author: post.author });
+    setShowForm(true);
+  };
+
+  const handleSave = () => {
     if (!form.title) return;
-    setNews((prev) => [
-      {
+    if (editingId) {
+      setNews((prev) => prev.map((n) => n.id === editingId ? { ...n, ...form } : n));
+    } else {
+      setNews((prev) => [{
         id: crypto.randomUUID(),
         title: form.title,
         content: form.content,
         imageUrl: "",
         date: new Date().toLocaleDateString("ru-RU"),
-        status: "draft",
+        status: "draft" as const,
         author: form.author || "Администрация",
-      },
-      ...prev,
-    ]);
+      }, ...prev]);
+    }
     setForm({ title: "", content: "", author: "" });
     setShowForm(false);
+    setEditingId(null);
   };
 
   const handleDelete = (id: string) => {
@@ -74,9 +90,7 @@ const NewsPage = ({ channel }: NewsPageProps) => {
   const togglePublish = (id: string) => {
     setNews((prev) =>
       prev.map((n) =>
-        n.id === id
-          ? { ...n, status: n.status === "published" ? "draft" : "published" as NewsPost["status"] }
-          : n
+        n.id === id ? { ...n, status: n.status === "published" ? "draft" : "published" as NewsPost["status"] } : n
       )
     );
   };
@@ -88,22 +102,14 @@ const NewsPage = ({ channel }: NewsPageProps) => {
           <h1 className="text-2xl font-bold text-foreground">{meta.title}</h1>
           <p className="text-sm text-muted-foreground mt-1">{meta.subtitle}</p>
         </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 bg-primary text-primary-foreground font-semibold px-4 py-2 rounded-lg hover:opacity-90 press-effect transition-all text-sm"
-        >
+        <button onClick={openAdd} className="flex items-center gap-2 bg-primary text-primary-foreground font-semibold px-4 py-2 rounded-lg hover:opacity-90 press-effect transition-all text-sm">
           <Plus size={16} strokeWidth={1.5} /> Создать пост
         </button>
       </div>
 
       <div className="relative max-w-sm">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Поиск публикаций..."
-          className="w-full bg-card border border-border rounded-lg pl-9 pr-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-        />
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Поиск публикаций..." className="w-full bg-card border border-border rounded-lg pl-9 pr-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
       </div>
 
       {/* Form modal */}
@@ -111,7 +117,10 @@ const NewsPage = ({ channel }: NewsPageProps) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={() => setShowForm(false)} />
           <div className="relative w-full max-w-md bg-card border border-border rounded-xl shadow-2xl animate-fade-in p-6 space-y-4">
-            <h2 className="text-lg font-bold text-foreground">Новая публикация</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-foreground">{editingId ? "Редактировать пост" : "Новая публикация"}</h2>
+              <button onClick={() => setShowForm(false)} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
+            </div>
             <div className="space-y-3">
               <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Заголовок" className="w-full bg-muted/50 border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
               <textarea value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder="Текст публикации..." rows={4} className="w-full bg-muted/50 border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none resize-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
@@ -123,8 +132,31 @@ const NewsPage = ({ channel }: NewsPageProps) => {
             </div>
             <div className="flex gap-3 pt-2">
               <button onClick={() => setShowForm(false)} className="flex-1 border border-border text-foreground font-medium py-2.5 rounded-lg hover:bg-muted press-effect transition-all text-sm">Отмена</button>
-              <button onClick={handleAdd} className="flex-1 bg-primary text-primary-foreground font-semibold py-2.5 rounded-lg hover:opacity-90 press-effect transition-all text-sm">Создать</button>
+              <button onClick={handleSave} className="flex-1 bg-primary text-primary-foreground font-semibold py-2.5 rounded-lg hover:opacity-90 press-effect transition-all text-sm">{editingId ? "Сохранить" : "Создать"}</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Preview modal */}
+      {previewPost && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={() => setPreviewPost(null)} />
+          <div className="relative w-full max-w-lg bg-card border border-border rounded-xl shadow-2xl animate-fade-in p-6 space-y-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-foreground">{previewPost.title}</h2>
+                <p className="text-xs text-muted-foreground mt-1">{previewPost.date} · {previewPost.author}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${STATUS_MAP[previewPost.status].cls}`}>{STATUS_MAP[previewPost.status].label}</span>
+                <button onClick={() => setPreviewPost(null)} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
+              </div>
+            </div>
+            <div className="border-t border-border pt-4">
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{previewPost.content}</p>
+            </div>
+            <button onClick={() => setPreviewPost(null)} className="w-full border border-border text-foreground font-medium py-2.5 rounded-lg hover:bg-muted press-effect transition-all text-sm">Закрыть</button>
           </div>
         </div>
       )}
@@ -148,20 +180,16 @@ const NewsPage = ({ channel }: NewsPageProps) => {
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={() => togglePublish(post.id)}
-                    className="p-2 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-                    title={post.status === "published" ? "Снять с публикации" : "Опубликовать"}
-                  >
+                  <button onClick={() => setPreviewPost(post)} className="p-2 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground" title="Превью">
                     <Eye size={14} />
                   </button>
-                  <button className="p-2 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
+                  <button onClick={() => togglePublish(post.id)} className="p-2 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground" title={post.status === "published" ? "Снять с публикации" : "Опубликовать"}>
+                    {post.status === "published" ? "📤" : "📥"}
+                  </button>
+                  <button onClick={() => openEdit(post)} className="p-2 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground" title="Редактировать">
                     <Pencil size={14} />
                   </button>
-                  <button
-                    onClick={() => handleDelete(post.id)}
-                    className="p-2 rounded-md hover:bg-destructive/10 transition-colors text-muted-foreground hover:text-destructive"
-                  >
+                  <button onClick={() => handleDelete(post.id)} className="p-2 rounded-md hover:bg-destructive/10 transition-colors text-muted-foreground hover:text-destructive" title="Удалить">
                     <Trash2 size={14} />
                   </button>
                 </div>
