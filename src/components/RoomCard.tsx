@@ -12,9 +12,9 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 };
 
 const STATUS_COLORS: Record<Room["status"], string> = {
-  available: "bg-success/15 text-success border-success/20",
-  occupied: "bg-warning/15 text-warning border-warning/20",
-  maintenance: "bg-muted text-muted-foreground border-border",
+  available: "bg-success/10 text-success",
+  occupied: "bg-warning/10 text-warning",
+  maintenance: "bg-muted text-muted-foreground",
 };
 
 interface RoomCardProps {
@@ -40,22 +40,20 @@ export function RoomCard({ room, onEdit, onDelete }: RoomCardProps) {
     .filter(Boolean);
 
   return (
-    <div className="border border-border rounded-lg bg-card hover:border-primary/30 transition-colors group">
+    <div className="border border-border rounded-xl bg-card hover:shadow-sm transition-all group">
       <div className="p-4 space-y-3">
-        {/* Header */}
         <div className="flex items-start justify-between">
           <div className="space-y-1 flex-1 min-w-0">
-            <h3 className="text-sm font-medium text-foreground truncate">{room.name}</h3>
+            <h3 className="text-sm font-semibold text-foreground truncate">{room.name}</h3>
             {room.description && (
               <p className="text-xs text-muted-foreground line-clamp-2">{room.description}</p>
             )}
           </div>
-          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-md border shrink-0 ml-3 ${STATUS_COLORS[room.status]}`}>
+          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0 ml-3 ${STATUS_COLORS[room.status]}`}>
             {STATUS_LABELS[room.status]}
           </span>
         </div>
 
-        {/* Meta */}
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5 tabular-nums">
             <Users size={13} strokeWidth={1.5} /> {room.capacity} чел.
@@ -65,14 +63,10 @@ export function RoomCard({ room, onEdit, onDelete }: RoomCardProps) {
           </span>
         </div>
 
-        {/* Amenities */}
         {amenityDetails.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {amenityDetails.map((a) => (
-              <span
-                key={a!.id}
-                className="flex items-center gap-1 text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded"
-              >
+              <span key={a!.id} className="flex items-center gap-1 text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
                 {ICON_MAP[a!.icon]} {a!.label}
               </span>
             ))}
@@ -80,7 +74,6 @@ export function RoomCard({ room, onEdit, onDelete }: RoomCardProps) {
         )}
       </div>
 
-      {/* Actions */}
       <div className="flex border-t border-border">
         <button
           onClick={() => onEdit(room)}
