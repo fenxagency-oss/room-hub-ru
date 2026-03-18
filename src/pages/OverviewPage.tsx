@@ -159,6 +159,22 @@ const OverviewPage = () => {
   const revenueData = getMonthlyData(revenuePeriod);
   const occupancyData = getMonthlyData(occupancyPeriod);
 
+  const exportDashboardCSV = () => {
+    const header = "Месяц,Продажи,Выручка (₸),Бронирования,Загрузка (%)";
+    const rows = MONTHLY_DATA_FULL.map((d) =>
+      `${d.month},${d.продажи},${d.выручка},${d.бронирования},${d.загрузка}`
+    );
+    const csv = [header, ...rows].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `dashboard_report_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Отчёт дашборда экспортирован");
+  };
+
   return (
     <div className="p-6 lg:p-8 space-y-6 animate-fade-in">
       <div>
