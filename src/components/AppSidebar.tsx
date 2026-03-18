@@ -44,6 +44,7 @@ export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const { admin, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <aside
