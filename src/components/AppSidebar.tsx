@@ -2,9 +2,10 @@ import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Users, UsersRound, DoorOpen, CalendarCheck,
   MessageCircle, CalendarDays, Newspaper, Building2, ChevronLeft,
-  Megaphone,
+  Megaphone, LogOut,
 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const NAV_SECTIONS = [
   {
@@ -41,6 +42,7 @@ const NAV_SECTIONS = [
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { admin, logout } = useAuth();
 
   return (
     <aside
@@ -71,11 +73,14 @@ export function AppSidebar() {
             )}
             <div className="space-y-0.5">
               {section.items.map((item) => {
-                const isActive = location.pathname === item.to;
+                const isActive = item.to === "/dashboard"
+                  ? location.pathname === "/dashboard"
+                  : location.pathname.startsWith(item.to);
                 return (
                   <NavLink
                     key={item.to}
                     to={item.to}
+                    end={item.to === "/dashboard"}
                     className={`flex items-center gap-2.5 px-2.5 py-2 rounded-md text-[13px] font-medium transition-colors ${
                       isActive
                         ? "bg-sidebar-accent text-sidebar-accent-foreground"
@@ -95,6 +100,23 @@ export function AppSidebar() {
           </div>
         ))}
       </nav>
+
+      {/* Admin info + Logout */}
+      <div className="border-t border-sidebar-border p-2 space-y-1">
+        {!collapsed && admin && (
+          <div className="px-2.5 py-2">
+            <p className="text-xs font-semibold text-sidebar-accent-foreground truncate">{admin.name}</p>
+            <p className="text-[10px] text-sidebar-muted truncate">{admin.email}</p>
+          </div>
+        )}
+        <button
+          onClick={logout}
+          className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-[13px] font-medium text-sidebar-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+        >
+          <LogOut size={18} strokeWidth={1.5} />
+          {!collapsed && <span>Выйти</span>}
+        </button>
+      </div>
 
       {/* Collapse toggle */}
       <button
