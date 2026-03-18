@@ -2,10 +2,11 @@ import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Users, UsersRound, DoorOpen, CalendarCheck,
   MessageCircle, CalendarDays, Newspaper, Building2, ChevronLeft,
-  Megaphone, LogOut,
+  Megaphone, LogOut, Sun, Moon,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const NAV_SECTIONS = [
   {
@@ -43,6 +44,7 @@ export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const { admin, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <aside
@@ -101,8 +103,15 @@ export function AppSidebar() {
         ))}
       </nav>
 
-      {/* Admin info + Logout */}
+      {/* Theme toggle + Admin info + Logout */}
       <div className="border-t border-sidebar-border p-2 space-y-1">
+        <button
+          onClick={toggleTheme}
+          className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-[13px] font-medium text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground transition-colors"
+        >
+          {theme === "light" ? <Moon size={18} strokeWidth={1.5} /> : <Sun size={18} strokeWidth={1.5} />}
+          {!collapsed && <span>{theme === "light" ? "Тёмная тема" : "Светлая тема"}</span>}
+        </button>
         {!collapsed && admin && (
           <div className="px-2.5 py-2">
             <p className="text-xs font-semibold text-sidebar-accent-foreground truncate">{admin.name}</p>

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import {
   Users, DoorOpen, CalendarCheck, TrendingUp, Clock, ArrowUpRight, ArrowDownRight,
-  Download, ShoppingCart, Smartphone, BarChart3, Activity
+  Download, ShoppingCart, Smartphone, BarChart3, Activity, FileDown
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis,
   CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, ComposedChart
@@ -157,11 +159,32 @@ const OverviewPage = () => {
   const revenueData = getMonthlyData(revenuePeriod);
   const occupancyData = getMonthlyData(occupancyPeriod);
 
+  const exportDashboardCSV = () => {
+    const header = "Месяц,Продажи,Выручка (₸),Бронирования,Загрузка (%)";
+    const rows = MONTHLY_DATA_FULL.map((d) =>
+      `${d.month},${d.продажи},${d.выручка},${d.бронирования},${d.загрузка}`
+    );
+    const csv = [header, ...rows].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `dashboard_report_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Отчёт дашборда экспортирован");
+  };
+
   return (
     <div className="p-6 lg:p-8 space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Панель управления</h1>
-        <p className="text-sm text-muted-foreground mt-1">Обзор текущей активности пространств</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Панель управления</h1>
+          <p className="text-sm text-muted-foreground mt-1">Обзор текущей активности пространств</p>
+        </div>
+        <Button variant="outline" size="sm" onClick={exportDashboardCSV} className="gap-1.5">
+          <FileDown size={14} /> Экспорт отчёта
+        </Button>
       </div>
 
       {/* Stats grid */}
