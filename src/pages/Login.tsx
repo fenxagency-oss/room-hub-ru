@@ -15,7 +15,6 @@ const Login = () => {
       setError("Заполните все поля");
       return;
     }
-    // Demo login — accepts any credentials
     navigate("/dashboard");
   };
 
@@ -25,67 +24,67 @@ const Login = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-[380px] space-y-8"
+        className="w-full max-w-[400px] space-y-8"
       >
-        <div className="space-y-3 text-center">
+        <div className="space-y-4 text-center">
           <div className="flex justify-center">
-            <div className="w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-primary" strokeWidth={1.5} />
+            <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+              <Building2 className="w-7 h-7 text-primary-foreground" strokeWidth={1.5} />
             </div>
           </div>
           <div className="space-y-1">
-            <h1 className="text-2xl font-medium tracking-tight text-foreground">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Вход в панель
             </h1>
             <p className="text-sm text-muted-foreground">
-              Управление рабочими пространствами
+              Spaces — управление рабочими пространствами
             </p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
+            <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-4 py-2.5">
               {error}
             </div>
           )}
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Email
             </label>
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-muted border border-border rounded-md px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-primary outline-none transition-all"
+              onChange={(e) => { setEmail(e.target.value); setError(""); }}
+              className="w-full bg-card border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
               placeholder="admin@spaces.ru"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Пароль
             </label>
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-muted border border-border rounded-md px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-primary outline-none transition-all"
+              onChange={(e) => { setPassword(e.target.value); setError(""); }}
+              className="w-full bg-card border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
               placeholder="••••••••"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-foreground text-background font-medium py-2.5 rounded-md hover:opacity-90 press-effect transition-all text-sm"
+            className="w-full bg-primary text-primary-foreground font-semibold py-2.5 rounded-lg hover:opacity-90 press-effect transition-all text-sm shadow-md shadow-primary/20"
           >
             Войти
           </button>
         </form>
 
-        <p className="text-xs text-center text-muted-foreground">
-          Spaces Admin Hub · v1.0
+        <p className="text-xs text-center text-muted-foreground/60">
+          Spaces Admin Panel · v2.0
         </p>
       </motion.div>
     </div>
