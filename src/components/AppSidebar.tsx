@@ -2,10 +2,11 @@ import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Users, UsersRound, DoorOpen, CalendarCheck,
   MessageCircle, CalendarDays, Newspaper, Building2, ChevronLeft,
-  Megaphone, LogOut,
+  Megaphone, LogOut, Sun, Moon,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const NAV_SECTIONS = [
   {
