@@ -177,9 +177,14 @@ const OverviewPage = () => {
 
   return (
     <div className="p-6 lg:p-8 space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Панель управления</h1>
-        <p className="text-sm text-muted-foreground mt-1">Обзор текущей активности пространств</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Панель управления</h1>
+          <p className="text-sm text-muted-foreground mt-1">Обзор текущей активности пространств</p>
+        </div>
+        <Button variant="outline" size="sm" onClick={exportDashboardCSV} className="gap-1.5">
+          <FileDown size={14} /> Экспорт отчёта
+        </Button>
       </div>
 
       {/* Stats grid */}
