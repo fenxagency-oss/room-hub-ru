@@ -18,6 +18,7 @@ import NewsPage from "./pages/NewsPage";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
+  <ThemeProvider>
   <AuthProvider>
     <TooltipProvider>
       <Toaster />
