@@ -13,8 +13,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   if (isAuthenticated) {
-    navigate("/dashboard", { replace: true });
-    return null;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSubmit = (e: React.FormEvent) => {
