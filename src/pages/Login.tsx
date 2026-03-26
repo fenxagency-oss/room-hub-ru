@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Building2, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,8 +13,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   if (isAuthenticated) {
-    navigate("/dashboard", { replace: true });
-    return null;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSubmit = (e: React.FormEvent) => {
